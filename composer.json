@@ -1,0 +1,32 @@
+{
+    "name": "formhandler/formhandler-legacy",
+    "type": "library",
+    "description": "Compatibility code for old style FormHandler",
+    "homepage": "http://www.formhandler.net/",
+    "license": "LGPL-2.1",
+    "support": {
+        "forum": "http://www.formhandler.net/forum_index.html",
+        "docs": "http://www.formhandler.net/manual/manual.html",
+        "issues": "https://github.com/FormHandler/FormHandler/issues"
+    },
+    "authors": [
+        {
+            "name": "Marien den Besten",
+            "homepage": "http://www.formhandler.net/",
+            "role": "Project lead"
+        }
+    ],
+    "require": {
+        "formhandler/formhandler": "dev-master"
+    },
+    "autoload": {
+        "files": [
+            "src/class.FormHandler.php",
+            "src/class.dbFormHandler.php",
+            "src/yadal/class.Yadal.php"
+        ]
+    },
+    "extra": {
+        "dev-master": "v3.3.x-dev"
+    }
+}
