@@ -21,9 +21,7 @@
     },
     "autoload": {
         "files": [
-            "src/class.FormHandler.php",
-            "src/class.dbFormHandler.php",
-            "src/yadal/class.Yadal.php"
+            "src/FormHandler.php"
         ]
     },
     "extra": {
