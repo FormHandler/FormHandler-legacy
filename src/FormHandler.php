@@ -911,7 +911,8 @@ function fh_conf()
 {
     if(func_num_args() == 2)
     {
-        FormHandler\Configuration::set(func_get_arg(0), func_get_arg(1));
+        $name = str_replace('fh_', '', strtolower(func_get_arg(0)));
+        FormHandler\Configuration::set($name, func_get_arg(1));
     }
 }
 
