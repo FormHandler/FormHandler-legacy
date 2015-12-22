@@ -1,4 +1,5 @@
 <?php
+
 /**
  * FormHandler Legacy v1.0
  *
@@ -17,7 +18,6 @@ use FormHandler\FormHandler as fhNew;
 class FormHandler extends fhNew
 {
 
-
     /**
      * FormHandler::textField()
      *
@@ -29,15 +29,13 @@ class FormHandler extends fhNew
      * @param int $size: The size of the field
      * @param int $maxlength: The allowed max input of the field
      * @param string $extra: CSS, Javascript or other which are inserted into the HTML tag
-     * @return TextField
+     * @return \FormHandler\Field\Text
      * @author Teye Heimans
-     * @deprecated Use TextField::set() instead
+     * @deprecated Use \FormHandler\Field\Text::set() instead
      */
-    public function textField(
-        $title, $name, $validator = null, $size = null, $maxlength = null, $extra = null
-    )
+    public function textField($title, $name, $validator = null, $size = null, $maxlength = null, $extra = null)
     {
-        return TextField::set($this, $title, $name, $validator)
+        return \FormHandler\Field\Text::set($this, $title, $name, $validator)
                 ->setSize($size)
                 ->setMaxlength($maxlength)
                 ->setExtra($extra);
@@ -54,14 +52,14 @@ class FormHandler extends fhNew
      * @param int $size The size of the field
      * @param int $maxlength allowed max input of the field
      * @param string $extra CSS, Javascript or other which are inserted into the HTML tag
-     * @return PassField
+     * @return \FormHandler\Field\Password
      * @author Teye Heimans
-     * @deprecated Use PassField::set() instead
+     * @deprecated Use \FormHandler\Field\Password::set() instead
      */
     public function passField(
-        $title, $name, $validator = null, $size = null, $maxlength = null, $extra = null)
+    $title, $name, $validator = null, $size = null, $maxlength = null, $extra = null)
     {
-        return PassField::set($this, $title, $name, $validator)
+        return \FormHandler\Field\Password::set($this, $title, $name, $validator)
                 ->setSize($size)
                 ->setMaxlength($maxlength)
                 ->setExtra($extra);
@@ -76,14 +74,13 @@ class FormHandler extends fhNew
      * @param string $value The value of the field
      * @param string $validator The validator which should be used to validate the value of the field
      * @param string $extra CSS, Javascript or other which are inserted into the HTML tag
-     * @return HiddenField
+     * @return \FormHandler\Field\Hidden
      * @author Teye Heimans
-     * @deprecated Use HiddenField::set() instead
+     * @deprecated Use \FormHandler\Field\Hidden::set() instead
      */
-    public function hiddenField(
-        $name, $value = null, $validator = null, $extra = null)
+    public function hiddenField($name, $value = null, $validator = null, $extra = null)
     {
-        $fld = HiddenField::set($this, $name, $validator)->setExtra($extra);
+        $fld = \FormHandler\Field\Hidden::set($this, $name, $validator)->setExtra($extra);
 
         // only set the hidden field value if there is not a value in the $_POST array
         if(!is_null($value))
@@ -104,14 +101,13 @@ class FormHandler extends fhNew
      * @param int $cols How many cols (the width of the field)
      * @param int $rows How many rows (the height of the field)
      * @param string $extra CSS, Javascript or other which are inserted into the HTML tag
-     * @return TextArea
+     * @return \FormHandler\Field\TextArea
      * @author Teye Heimans
-     * @deprecated Use TextArea::set() instead
+     * @deprecated Use \FormHandler\Field\TextArea::set() instead
      */
-    public function textArea(
-        $title, $name, $validator = null, $cols = null, $rows = null, $extra = null)
+    public function textArea($title, $name, $validator = null, $cols = null, $rows = null, $extra = null)
     {
-        return TextArea::set($this, $title, $name, $validator)
+        return \FormHandler\Field\TextArea::set($this, $title, $name, $validator)
                 ->setValidator($validator)
                 ->setCols($cols)
                 ->setRows($rows)
@@ -131,16 +127,13 @@ class FormHandler extends fhNew
      * @param boolean $multiple Should it be possible to select multiple options ? (Default: false)
      * @param int $size The size of the field (how many options are displayed)
      * @param string $extra CSS, Javascript or other which are inserted into the HTML tag
-     * @return SelectField
+     * @return \FormHandler\Field\Select
      * @author Teye Heimans
-     * @deprecated Use SelectField::set() instead
+     * @deprecated Use \FormHandler\Field\Select::set() instead
      */
-    public function selectField(
-        $title, $name, $options = array(), $validator = null, $useArrayKeyAsValue = null, $multiple = null, $size = null,
-        $extra = null
-    )
+    public function selectField($title, $name, $options = array(), $validator = null, $useArrayKeyAsValue = null, $multiple = null, $size = null, $extra = null)
     {
-        return SelectField::set($this, $title, $name, $validator)
+        return \FormHandler\Field\Select::set($this, $title, $name, $validator)
                 ->setOptions($options)
                 ->setValidator($validator)
                 ->useArrayKeyAsValue($useArrayKeyAsValue)
@@ -161,14 +154,13 @@ class FormHandler extends fhNew
      * @param boolean $useArrayKeyAsValue If the array key's are the values for the options in the field
      * @param string $extra CSS, Javascript or other which are inserted into the HTML tag
      * @param string $mask if more the 1 options are given, glue the fields together with this mask
-     * @return CheckBox
+     * @return \FormHandler\Field\CheckBox
      * @author Teye Heimans
-     * @deprecated Use CheckBox::set() instead
+     * @deprecated Use \FormHandler\Field\CheckBox::set() instead
      */
-    public function checkBox(
-        $title, $name, $value = 'on', $validator = null, $useArrayKeyAsValue = null, $extra = null, $mask = null)
+    public function checkBox($title, $name, $value = 'on', $validator = null, $useArrayKeyAsValue = null, $extra = null, $mask = null)
     {
-        return CheckBox::set($this, $title, $name, $validator)
+        return \FormHandler\Field\CheckBox::set($this, $title, $name, $validator)
                 ->setOptions($value)
                 ->useArrayKeyAsValue($useArrayKeyAsValue)
                 ->setExtra($extra)
@@ -187,14 +179,13 @@ class FormHandler extends fhNew
      * @param boolean $useArrayKeyAsValue If the array key's are the values for the options in the field
      * @param string $extra CSS, Javascript or other which are inserted into the HTML tag
      * @param string $mask if more the 1 options are given, glue the fields together with this mask
-     * @return RadioButton
+     * @return \FormHandler\Field\Radio
      * @author Teye Heimans
-     * @deprecated Use RadioButton::set() instead
+     * @deprecated Use \FormHandler\Field\Radio::set() instead
      */
-    public function radioButton(
-        $title, $name, $options, $validator = null, $useArrayKeyAsValue = null, $extra = null, $mask = null)
+    public function radioButton($title, $name, $options, $validator = null, $useArrayKeyAsValue = null, $extra = null, $mask = null)
     {
-        return RadioButton::set($this, $title, $name, $validator)
+        return \FormHandler\Field\Radio::set($this, $title, $name, $validator)
                 ->setOptions($options)
                 ->useArrayKeyAsValue($useArrayKeyAsValue)
                 ->setExtra($extra)
@@ -216,15 +207,13 @@ class FormHandler extends fhNew
      * @param int $size The size of the field (how many options are displayed)
      * @param string $extra CSS, Javascript or other which are inserted into the HTML tag
      * @param string $verticalMode Verticalmode
-     * @return ListField
+     * @return \FormHandler\Field\SelectList
      * @author Teye Heimans
-     * @deprecated Use ListField::set() instead
+     * @deprecated Use \FormHandler\Field\SelectList::set() instead
      */
-    public function listField(
-        $title, $name, $options, $validator = null, $useArrayKeyAsValue = null, $onTitle = null, $offTitle = null,
-        $size = null, $extra = null, $verticalMode = null)
+    public function listField($title, $name, $options, $validator = null, $useArrayKeyAsValue = null, $onTitle = null, $offTitle = null, $size = null, $extra = null, $verticalMode = null)
     {
-        return ListField::set($this, $title, $name, $validator)
+        return \FormHandler\Field\SelectList::set($this, $title, $name, $validator)
                 ->setOptions($options)
                 ->useArrayKeyAsValue($useArrayKeyAsValue)
                 ->setSize($size)
@@ -246,14 +235,14 @@ class FormHandler extends fhNew
      * @param string $caption The caption of the button
      * @param string $name The name of the button
      * @param string $extra CSS, Javascript or other which are inserted into the HTML tag
-     * @return Button
+     * @return \FormHandler\Button\Button
      * @author Teye Heimans
      * @author Marien den Besten
-     * @deprecated Use Button::set() instead
+     * @deprecated Use \FormHandler\Button\Button::set() instead
      */
     public function button($caption, $name = null, $extra = null, $disableOnClick = true)
     {
-        $btn = Button::set($this, $caption, $name)
+        $btn = \FormHandler\Button\Button::set($this, $caption, $name)
             ->setExtra($extra);
 
         if(!is_null($disableOnClick))
@@ -272,13 +261,13 @@ class FormHandler extends fhNew
      * @param string $name The name of the button
      * @param string $extra CSS, Javascript or other which are inserted into the HTML tag
      * @param boolean $disableOnSubmit Disable the button when it is pressed
-     * @return SubmitButton
+     * @return \FormHandler\Button\Submit
      * @author Teye Heimans
-     * @deprecated Use SubmitButton::set() instead
+     * @deprecated Use \FormHandler\Button\Submit::set() instead
      */
     public function submitButton($caption = null, $name = null, $extra = null, $disableOnSubmit = null)
     {
-        $btn = SubmitButton::set($this, $caption, $name)
+        $btn = \FormHandler\Button\Submit::set($this, $caption, $name)
             ->setExtra($extra);
 
         if(!is_null($disableOnSubmit))
@@ -297,13 +286,13 @@ class FormHandler extends fhNew
      * @param string $name: The name of the button
      * @param string $extra: CSS, Javascript or other which are inserted into the HTML tag
      * @param boolean $disableOnSubmit: Disable the button when it is pressed
-     * @return ImageButton
+     * @return \FormHandler\Button\Image
      * @author Teye Heimans
-     * @deprecated Use ImageButton::set() instead
+     * @deprecated Use \FormHandler\Button\Image::set() instead
      */
     public function imageButton($image, $name = null, $extra = null)
     {
-        return ImageButton::set($this, null, $name)
+        return \FormHandler\Button\Image::set($this, null, $name)
                 ->setImage($image)
                 ->setExtra($extra);
     }
@@ -316,13 +305,13 @@ class FormHandler extends fhNew
      * @param string $caption The caption of the button
      * @param string $name The name of the button
      * @param string $extra CSS, Javascript or other which are inserted into the HTML tag
-     * @return ResetButton
+     * @return \FormHandler\Button\Reset
      * @author Teye Heimans
-     * @deprecated Use ResetButton::set() instead
+     * @deprecated Use \FormHandler\Button\Reset::set() instead
      */
     public function resetButton($caption = null, $name = null, $extra = null)
     {
-        return ResetButton::set($this, $caption, $name)
+        return \FormHandler\Button\Reset::set($this, $caption, $name)
                 ->setExtra($extra);
     }
 
@@ -335,15 +324,41 @@ class FormHandler extends fhNew
      * @param string $url The URL to go to when the button is clicked
      * @param string $name The name of the button
      * @param string $extra CSS, Javascript or other which are inserted into the HTML tag
-     * @return CancelButton
+     * @return \FormHandler\Button\Cancel
      * @author Teye Heimans
-     * @deprecated Use CancelButton::set() instead
+     * @deprecated Use \FormHandler\Button\Cancel::set() instead
      */
     public function cancelButton($caption = null, $url = null, $name = null, $extra = null)
     {
-        return CancelButton::set($this, $caption, $name)
+        return \FormHandler\Button\Cancel::set($this, $caption, $name)
                 ->setUrl($url)
                 ->setExtra($extra);
+    }
+
+    /**
+     * FormHandler::captchaField()
+     *
+     * Creates a captchafield on the form using Securimage - A PHP class for creating and managing form CAPTCHA images
+     *
+     * @param string $title: The title of the field
+     * @param string $name: The name of the field
+     * @param int $size: The size of the field
+     * @param int $maxlength: The allowed max input of the field
+     * @param string $extra: CSS, Javascript or other which are inserted into the HTML tag
+     * @return void
+     * @author Johan Wiegel
+     * @since 27-11-2007
+     * @deprecated Use \FormHandler\Field\Captcha::set() instead
+     */
+    public function CaptchaField($title, $name, $width = null, $height = null, $length = null, $size = null, $maxlength = null, $extra = null, $url = null)
+    {
+        \FormHandler\Field\Captcha::set($this, $title, $name)
+            ->setWidth($width)
+            ->setHeight($height)
+            ->setSize($size)
+            ->setMaxlength($max_length)
+            ->setExtra($extra);
+        return $this;
     }
 
     /**
@@ -355,7 +370,7 @@ class FormHandler extends fhNew
     public function flush($return = false)
     {
         $form = parent::flush();
-        
+
         // return or print the form
         if($return)
         {
