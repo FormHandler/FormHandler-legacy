@@ -173,10 +173,10 @@ class FormHandler extends fhNew
      * @author Teye Heimans
      * @deprecated Use \FormHandler\Field\Select::set() instead
      */
-    public function selectField($title, $name, $options = array(), $validator = null, $useArrayKeyAsValue = null, $multiple = null, $size = null, $extra = null)
+    public function selectField($title, $name, $options = null, $validator = null, $useArrayKeyAsValue = null, $multiple = null, $size = null, $extra = null)
     {
         return \FormHandler\Field\Select::set($this, $title, $name, $validator)
-                ->setOptions($options)
+                ->setOptions(empty($options) ? null : $options)
                 ->setValidator($validator)
                 ->useArrayKeyAsValue($useArrayKeyAsValue)
                 ->setExtra($extra)
