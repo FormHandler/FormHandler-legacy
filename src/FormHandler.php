@@ -833,9 +833,9 @@ class FormHandler extends fhNew
     {
         \FormHandler\Field\Captcha::set($this, $title, $name)
             ->setWidth($width)
-            ->setHeight($height)
+            ->setHeight(is_null($height) ? $length : $height)
             ->setSize($size)
-            ->setMaxlength($max_length)
+            ->setMaxlength($maxlength)
             ->setExtra($extra);
         return $this;
     }
