@@ -902,6 +902,101 @@ class FormHandler extends fhNew
             return null;
         }
     }
+    
+    /**
+     * FormHandler::_text()
+     *
+     * Return the given text in the correct language
+     *
+     * @param integer $index the index of the text in the textfile
+     * @return string the text in the correct language
+     * @author Teye Heimans
+     * @deprecated since version 4
+     * @see \FormHandler\Language::get()
+     */
+    public function _text($index)
+    {
+        return \FormHandler\Language::get($index);
+    }
+
+    /**
+     * FormHandler::setLanguage()
+     *
+     * Set the language we should use for error messages etc.
+     * If no language is given, try to get the language defined by the visitors browser.
+     *
+     * @param string $language The language we should use
+     * @return FormHandler
+     * @author Teye Heimans
+     * @deprecated since version 4
+     * @see \FormHandler\Language::load()
+     */
+    public function setLanguage($language = null)
+    {
+        if(!is_null($language))
+        {
+            \FormHandler\Language::load($language);
+            return $this;
+        }
+    }
+
+    /**
+     * FormHandler::getLanguage()
+     *
+     * Return the language used for the form
+     *
+     * @return string: the language
+     * @author Teye Heimans
+     * @deprecated since version 4
+     * @see \FormHandler\Language::active()
+     */
+    public function getLanguage()
+    {
+        return \FormHandler\Language::active();
+    }
+
+    /**
+     * Add an exclusion to the language array
+     *
+     * @param integer $index
+     * @param string $string
+     * @deprecated since version 4
+     * @see \FormHandler\Language::set()
+     */
+    public static function languageExclusionSet($index, $string)
+    {
+        \FormHandler\Language::set($index, $string);
+    }
+
+    /**
+     * Extend or update the FormHandler language list
+     *
+     * @param integer $index
+     * @param string $string
+     * @deprecated since version 4
+     * @see \FormHandler\Language::remove()
+     */
+    public static function languageExclusionUnset($index)
+    {
+        return \FormHandler\Language::remove($index);
+    }
+
+    /**
+     * FormHandler::setErrorMessage()
+     *
+     * @return FormHandler
+     * @deprecated since version 4
+     * @see Field\Field->setErrorMessage
+     */
+    public function setErrorMessage($field,$message)
+    {
+        $fld = $this->getField($field);
+        if(!is_null($fld))
+        {
+            $fld->setErrorMessage($message);
+        }
+        return $this;
+    }
 }
 
 /**
