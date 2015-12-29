@@ -9,6 +9,71 @@
 
 use FormHandler\FormHandler as fhNew;
 
+/* * ***** BUILD IN VALIDATOR FUNCTIONS ****** */
+// any string that doesn't have control characters (ASCII 0 - 31) but spaces are allowed
+define('FH_STRING', 'String', true);
+// only letters a-z and A-Z
+define('FH_ALPHA', 'Alpha', true);
+// only numbers 0-9
+define('FH_DIGIT', 'Digit', true);
+// letters and numbers
+define('FH_ALPHA_NUM', 'AlphaDigit', true);
+// only numbers 0-9 and an optional - (minus) sign (in the beginning only)
+define('FH_INTEGER', 'Integer', true);
+// like FH_INTEGER, only with , (comma)
+define('FH_FLOAT', 'Float', true);
+// a valid file name (including dots but no slashes and other forbidden characters)
+define('FH_FILENAME', 'Filename', true);
+// a boolean (TRUE is either a case-insensitive "true" or "1". Everything else is FALSE)
+define('FH_BOOL', 'Boolean', true);
+// a valid variable name (letters, digits, underscore)
+define('FH_VARIABLE', 'Variabele', true);
+// a valid password (alphanumberic + some other characters but no spaces. Only allow ASCII 33 - 126)
+define('FH_PASSWORD', 'Password', true);
+// a valid URL
+define('FH_URL', 'Url', true);
+// a valid URL (http connection is used to check if url exists!)
+define('FH_URL_HOST', 'UrlHost', true);
+// a valid email address (only checks for valid format: xxx@xxx.xxx)
+define('FH_EMAIL', 'Email', true);
+// like FH_EMAIL only with host check
+define('FH_EMAIL_HOST', 'EmailHost', true);
+// like FH_STRING, but newline characters are allowed
+define('FH_TEXT', 'Text', true);
+// check if the value is not empty
+define('FH_NOT_EMPTY', 'NotEmpty', true);
+// check if the value does not contain html
+define('FH_NO_HTML', 'NotHtml', true);
+// check if the value is a valid ip adres (xxx.xxx.xxx.xxx:xxxx)
+define('FH_IP', 'Ip', true);
+
+// for dutch people
+// valid dutch postcode (eg. 9999 AA)
+define('FH_POSTCODE', 'PostalDutch', true);
+// valid dutch phone-number(eg. 058-2134778)
+define('FH_PHONE', 'PhoneDutch', true);
+
+// same as above, but with these the value is not required
+define('_FH_STRING', '_String', true);
+define('_FH_ALPHA', '_Alpha', true);
+define('_FH_DIGIT', '_Digit', true);
+define('_FH_ALPHA_NUM', '_AlphaDigit', true);
+define('_FH_INTEGER', '_Integer', true);
+define('_FH_FLOAT', '_Float', true);
+define('_FH_FILENAME', '_Filename', true);
+define('_FH_BOOL', '_Bool', true);
+define('_FH_VARIABLE', '_Variabele', true);
+define('_FH_PASSWORD', '_Password', true);
+define('_FH_URL', '_Url', true);
+define('_FH_URL_HOST', '_UrlHost', true);
+define('_FH_EMAIL', '_Email', true);
+define('_FH_EMAIL_HOST', '_EmailHost', true);
+define('_FH_TEXT', '_Text', true);
+define('_FH_POSTCODE', '_PostalDutch', true);
+define('_FH_PHONE', '_PhoneDutch', true);
+define('_FH_NO_HTML', '_NotHtml', true);
+define('_FH_IP', '_Ip', true);
+
 /**
  * class FormHandler
  *
@@ -19,26 +84,64 @@ use FormHandler\FormHandler as fhNew;
 class FormHandler extends fhNew
 {
     /**
+     * Helper function to parse old style validators to new style
+     * 
+     * @param mixed $validator
+     * @return \name
+     */
+    public static function parseValidator($validator)
+    {
+        if($validator instanceof \FormHandler\Validator\ValidatorInterface)
+        {
+            return $validator;
+        }
+        if(is_string($validator))
+        {
+            $required = true;
+            if(substr($validator, 0, 1) == '_')
+            {
+                $validator = substr($validator, 1);
+                $required = false;
+            }
+            
+            $name = '\FormHandler\Validator\\' . $validator;
+
+            if(class_exists($name))
+            {
+                $v = new $name();
+                return $v->setRequired($required);
+            }
+        }
+        if(is_callable($validator))
+        {
+            return new \FormHandler\Validator\FunctionCallable($validator);
+        }
+        return null;
+    }
+
+    /**
      * FormHandler::textField()
      *
      * Creates a textfield on the form
      *
-     * @param string $title: The title of the field
-     * @param string $name: The name of the field
-     * @param string $validator: The validator which should be used to validate the value of the field
-     * @param int $size: The size of the field
-     * @param int $maxlength: The allowed max input of the field
-     * @param string $extra: CSS, Javascript or other which are inserted into the HTML tag
+     * @param string $title The title of the field
+     * @param string $name The name of the field
+     * @param string $validator The validator which should be used to validate the value of the field
+     * @param int $size The size of the field
+     * @param int $maxlength The allowed max input of the field
+     * @param string $extra CSS, Javascript or other which are inserted into the HTML tag
      * @return \FormHandler\Field\Text
      * @author Teye Heimans
-     * @deprecated Use \FormHandler\Field\Text::set() instead
+     * @deprecated since version 4
+     * @see \FormHandler\Field\Text::set()
      */
     public function textField($title, $name, $validator = null, $size = null, $maxlength = null, $extra = null)
     {
-        return \FormHandler\Field\Text::set($this, $title, $name, $validator)
-                ->setSize($size)
-                ->setMaxlength($maxlength)
-                ->setExtra($extra);
+        return \FormHandler\Field\Text::set($this, $title, $name)
+            ->setValidator(self::parseValidator($validator))
+            ->setSize($size)
+            ->setMaxlength($maxlength)
+            ->setExtra($extra);
     }
 
     /**
@@ -46,12 +149,12 @@ class FormHandler extends fhNew
      *
      * Creates a browserfield on the form
      *
-     * @param string $title: The title of the field
-     * @param string $name: The name of the field
-     * @param string $path: The path to browse
-     * @param string $validator: The validator which should be used to validate the value of the field
-     * @param int $size: The size of the field
-     * @param string $extra: CSS, Javascript or other which are inserted into the HTML tag
+     * @param string $title The title of the field
+     * @param string $name The name of the field
+     * @param string $path The path to browse
+     * @param string $validator The validator which should be used to validate the value of the field
+     * @param int $size The size of the field
+     * @param string $extra CSS, Javascript or other which are inserted into the HTML tag
      * @return \FormHandler\Field\Text
      * @author Johan Wiegel
      * @deprecated No alternative present
@@ -66,13 +169,13 @@ class FormHandler extends fhNew
      *
      * Creates a textSelectfield on the form
      *
-     * @param string $title: The title of the field
-     * @param string $name: The name of the field
-     * @param array $aOptions : the options for the select part
-     * @param string $validator: The validator which should be used to validate the value of the field
-     * @param int $size: The size of the field
-     * @param int $maxlength: The allowed max input of the field
-     * @param string $extra: CSS, Javascript or other which are inserted into the HTML tag
+     * @param string $title The title of the field
+     * @param string $name The name of the field
+     * @param array $aOptions the options for the select part
+     * @param string $validator The validator which should be used to validate the value of the field
+     * @param int $size The size of the field
+     * @param int $maxlength The allowed max input of the field
+     * @param string $extra CSS, Javascript or other which are inserted into the HTML tag
      * @return \FormHandler\Field\Select
      * @author Johan wiegel
      * @since 22-10-2008
@@ -101,10 +204,11 @@ class FormHandler extends fhNew
     public function passField(
     $title, $name, $validator = null, $size = null, $maxlength = null, $extra = null)
     {
-        return \FormHandler\Field\Password::set($this, $title, $name, $validator)
-                ->setSize($size)
-                ->setMaxlength($maxlength)
-                ->setExtra($extra);
+        return \FormHandler\Field\Password::set($this, $title, $name)
+            ->setValidator(self::parseValidator($validator))
+            ->setSize($size)
+            ->setMaxlength($maxlength)
+            ->setExtra($extra);
     }
 
     /**
@@ -122,7 +226,9 @@ class FormHandler extends fhNew
      */
     public function hiddenField($name, $value = null, $validator = null, $extra = null)
     {
-        $fld = \FormHandler\Field\Hidden::set($this, $name, $validator)->setExtra($extra);
+        $fld = \FormHandler\Field\Hidden::set($this, $name)
+            ->setValidator(self::parseValidator($validator))
+            ->setExtra($extra);
 
         // only set the hidden field value if there is not a value in the $_POST array
         if(!is_null($value))
@@ -149,11 +255,11 @@ class FormHandler extends fhNew
      */
     public function textArea($title, $name, $validator = null, $cols = null, $rows = null, $extra = null)
     {
-        return \FormHandler\Field\TextArea::set($this, $title, $name, $validator)
-                ->setValidator($validator)
-                ->setCols($cols)
-                ->setRows($rows)
-                ->setExtra($extra);
+        return \FormHandler\Field\TextArea::set($this, $title, $name)
+            ->setValidator(self::parseValidator($validator))
+            ->setCols($cols)
+            ->setRows($rows)
+            ->setExtra($extra);
     }
 
     /**
@@ -175,13 +281,13 @@ class FormHandler extends fhNew
      */
     public function selectField($title, $name, $options = null, $validator = null, $useArrayKeyAsValue = null, $multiple = null, $size = null, $extra = null)
     {
-        return \FormHandler\Field\Select::set($this, $title, $name, $validator)
-                ->setOptions(empty($options) ? null : $options)
-                ->setValidator($validator)
-                ->useArrayKeyAsValue($useArrayKeyAsValue)
-                ->setExtra($extra)
-                ->setMultiple($multiple)
-                ->setSize($size);
+        return \FormHandler\Field\Select::set($this, $title, $name)
+            ->setOptions(empty($options) ? null : $options)
+            ->setValidator(self::parseValidator($validator))
+            ->useArrayKeyAsValue($useArrayKeyAsValue)
+            ->setExtra($extra)
+            ->setMultiple($multiple)
+            ->setSize($size);
     }
 
     /**
@@ -202,11 +308,12 @@ class FormHandler extends fhNew
      */
     public function checkBox($title, $name, $value = 'on', $validator = null, $useArrayKeyAsValue = null, $extra = null, $mask = null)
     {
-        return \FormHandler\Field\CheckBox::set($this, $title, $name, $validator)
-                ->setOptions($value)
-                ->useArrayKeyAsValue($useArrayKeyAsValue)
-                ->setExtra($extra)
-                ->setMask($mask);
+        return \FormHandler\Field\CheckBox::set($this, $title, $name)
+            ->setValidator(self::parseValidator($validator))
+            ->setOptions($value)
+            ->useArrayKeyAsValue($useArrayKeyAsValue)
+            ->setExtra($extra)
+            ->setMask($mask);
     }
 
     /**
@@ -227,11 +334,12 @@ class FormHandler extends fhNew
      */
     public function radioButton($title, $name, $options, $validator = null, $useArrayKeyAsValue = null, $extra = null, $mask = null)
     {
-        return \FormHandler\Field\Radio::set($this, $title, $name, $validator)
-                ->setOptions($options)
-                ->useArrayKeyAsValue($useArrayKeyAsValue)
-                ->setExtra($extra)
-                ->setMask($mask);
+        return \FormHandler\Field\Radio::set($this, $title, $name)
+            ->setValidator(self::parseValidator($validator))
+            ->setOptions($options)
+            ->useArrayKeyAsValue($useArrayKeyAsValue)
+            ->setExtra($extra)
+            ->setMask($mask);
     }
 
 	/**
@@ -239,12 +347,12 @@ class FormHandler extends fhNew
      *
      * Create a uploadField on the form
      *
-     * @param string $title: The title of the field
-     * @param string $name: The name of the field
-     * @param array $config: The configuration used for the field
-     * @param string $validator: The validator which should be used to validate the value of the field
-     * @param string $extra: CSS, Javascript or other which are inserted into the HTML tag
-     * @param string $alertOverwrite: Do we have to alert the user when he/she is going to overwrite a file?
+     * @param string $title The title of the field
+     * @param string $name The name of the field
+     * @param array $config The configuration used for the field
+     * @param string $validator The validator which should be used to validate the value of the field
+     * @param string $extra CSS, Javascript or other which are inserted into the HTML tag
+     * @param string $alertOverwrite Do we have to alert the user when he/she is going to overwrite a file?
      * @return FormHandler\Field\File
      * @author Teye Heimans
      * @deprecated Use FormHandler\Field\File::set() instead
@@ -252,6 +360,7 @@ class FormHandler extends fhNew
 	public function uploadField($title, $name, $config = array(), $validator = null, $extra = null, $alertOverwrite = null)
     {
         return FormHandler\Field\File::set($this, $title, $name)
+            ->setValidator(self::parseValidator($validator))
             ->setExtra($extra);
     }
 
@@ -276,14 +385,15 @@ class FormHandler extends fhNew
      */
     public function listField($title, $name, $options, $validator = null, $useArrayKeyAsValue = null, $onTitle = null, $offTitle = null, $size = null, $extra = null, $verticalMode = null)
     {
-        return \FormHandler\Field\SelectList::set($this, $title, $name, $validator)
-                ->setOptions($options)
-                ->useArrayKeyAsValue($useArrayKeyAsValue)
-                ->setSize($size)
-                ->setExtra($extra)
-                ->setOnTitle($onTitle)
-                ->setOffTitle($offTitle)
-                ->setVerticalMode($verticalMode);
+        return \FormHandler\Field\SelectList::set($this, $title, $name)
+            ->setValidator(self::parseValidator($validator))
+            ->setOptions($options)
+            ->useArrayKeyAsValue($useArrayKeyAsValue)
+            ->setSize($size)
+            ->setExtra($extra)
+            ->setOnTitle($onTitle)
+            ->setOffTitle($offTitle)
+            ->setVerticalMode($verticalMode);
     }
 
 	/**
@@ -291,16 +401,16 @@ class FormHandler extends fhNew
      *
      * Create a editor on the form
      *
-     * @param string $title: The title of the field
-     * @param string $name: The name of the field
-     * @param string $validator: The validator which should be used to validate the value of the field
-     * @param string $path: Path on the server where we have to upload the files
-     * @param string $toolbar: The toolbar we have to use
-     * @param string $skin: The skin to use
-     * @param int $width: The width of the field
-     * @param int $height: The height of the field
-     * @param boolean $useArrayKeyAsValue: If the array key's are the values for the options in the field
-     * @param string $extra: CSS, Javascript or other which are inserted into the HTML tag
+     * @param string $title The title of the field
+     * @param string $name The name of the field
+     * @param string $validator The validator which should be used to validate the value of the field
+     * @param string $path Path on the server where we have to upload the files
+     * @param string $toolbar The toolbar we have to use
+     * @param string $skin The skin to use
+     * @param int $width The width of the field
+     * @param int $height The height of the field
+     * @param boolean $useArrayKeyAsValue If the array key's are the values for the options in the field
+     * @param string $extra CSS, Javascript or other which are inserted into the HTML tag
      * @return \FormHandler\Field\TextArea
      * @author Teye Heimans
      * @deprecated No alternative exist
@@ -315,20 +425,21 @@ class FormHandler extends fhNew
      *
      * Create a dateField on the form
      *
-     * @param string $title: The title of the field
-     * @param string $name: The name of the field
-     * @param string $validator: The validator which should be used to validate the value of the field
-     * @param boolean $required: If the field is required to fill in or can the user leave it blank
-     * @param string $mask: How do we have to display the fields? These can be used: d, m and y.
-     * @param string $interval: The interval between the current year and the years to start/stop.Default the years are beginning at 90 yeas from the current. It is also possible to have years in the future. This is done like this: "90:10" (10 years in the future).
-     * @param string $extra: CSS, Javascript or other which are inserted into the HTML tag
+     * @param string $title The title of the field
+     * @param string $name The name of the field
+     * @param string $validator The validator which should be used to validate the value of the field
+     * @param boolean $required If the field is required to fill in or can the user leave it blank
+     * @param string $mask How do we have to display the fields? These can be used: d, m and y.
+     * @param string $interval The interval between the current year and the years to start/stop.Default the years are beginning at 90 yeas from the current. It is also possible to have years in the future. This is done like this: "90:10" (10 years in the future).
+     * @param string $extra CSS, Javascript or other which are inserted into the HTML tag
      * @return \FormHandler\Field\Text
      * @author Teye Heimans
      * @deprecated No alternative exist yet
      */
     public function dateField($title, $name, $validator = null, $required = null, $mask = null, $interval = null, $extra = null)
     {
-        return \FormHandler\Field\Text::set($this, $title, $name, $validator)
+        return \FormHandler\Field\Text::set($this, $title, $name)
+            ->setValidator(self::parseValidator($validator))
             ->setExtra($extra);
     }
 
@@ -337,21 +448,22 @@ class FormHandler extends fhNew
      *
      * Create a dateField with a jscalendar popup on the form
      *
-     * @param string $title: The title of the field
-     * @param string $name: The name of the field
-     * @param string $validator: The validator which should be used to validate the value of the field
-     * @param boolean $required: If the field is required to fill in or can the user leave it blank
-     * @param string $mask: How do we have to display the fields? These can be used: d, m and y.
-     * @param string $interval: The interval between the current year and the years to start/stop.Default the years are beginning at 90 yeas from the current. It is also possible to have years in the future. This is done like this: "90:10" (10 years in the future).
-     * @param string $extra: CSS, Javascript or other which are inserted into the HTML tag
-     * @param boolean $bIncludeJS: Should we include the js file (only needed once on a page)
+     * @param string $title The title of the field
+     * @param string $name The name of the field
+     * @param string $validator The validator which should be used to validate the value of the field
+     * @param boolean $required If the field is required to fill in or can the user leave it blank
+     * @param string $mask How do we have to display the fields? These can be used: d, m and y.
+     * @param string $interval The interval between the current year and the years to start/stop.Default the years are beginning at 90 yeas from the current. It is also possible to have years in the future. This is done like this: "90:10" (10 years in the future).
+     * @param string $extra CSS, Javascript or other which are inserted into the HTML tag
+     * @param boolean $bIncludeJS Should we include the js file (only needed once on a page)
      * @return \FormHandler\Field\Text
      * @author Teye Heimans
      * @deprecated No alternative exist yet
      */
     public function jsDateField($title, $name, $validator = null, $required = null, $mask = null, $interval = null, $extra = null, $bIncludeJS = true)
     {
-        return \FormHandler\Field\Text::set($this, $title, $name, $validator)
+        return \FormHandler\Field\Text::set($this, $title, $name)
+            ->setValidator(self::parseValidator($validator))
             ->setExtra($extra);
     }
 
@@ -360,18 +472,19 @@ class FormHandler extends fhNew
      *
      * Create a timeField on the form
      *
-     * @param string $title: The title of the field
-     * @param string $name: The name of the field
-     * @param string $validator: The validator which should be used to validate the value of the field
-     * @param int $format: 12 or 24. Which should we use?
-     * @param string $extra: CSS, Javascript or other which are inserted into the HTML tag
+     * @param string $title The title of the field
+     * @param string $name:The name of the field
+     * @param string $validator The validator which should be used to validate the value of the field
+     * @param int $format 12 or 24. Which should we use?
+     * @param string $extra CSS, Javascript or other which are inserted into the HTML tag
      * @return \FormHandler\Field\Text
      * @author Teye Heimans
      * @deprecated No alternative exist yet
      */
     public function timeField($title, $name, $validator = null, $required = null, $format = null, $extra = null)
     {
-        return \FormHandler\Field\Text::set($this, $title, $name, $validator)
+        return \FormHandler\Field\Text::set($this, $title, $name)
+            ->setValidator(self::parseValidator($validator))
             ->setExtra($extra);
     }
 
@@ -380,12 +493,12 @@ class FormHandler extends fhNew
      *
      * Creates a colorpicker on the form
      *
-     * @param string $title: The title of the field
-     * @param string $name: The name of the field
-     * @param string $validator: The validator which should be used to validate the value of the field
-     * @param int $size: The size of the field
-     * @param int $maxlength: The allowed max input of the field
-     * @param string $extra: CSS, Javascript or other which are inserted into the HTML tag
+     * @param string $title The title of the field
+     * @param string $name The name of the field
+     * @param string $validator The validator which should be used to validate the value of the field
+     * @param int $size The size of the field
+     * @param int $maxlength The allowed max input of the field
+     * @param string $extra CSS, Javascript or other which are inserted into the HTML tag
      * @return \FormHandler\Field\ColorPicker
      * @author Johan Wiegel
      * @since 23-10-2008
@@ -393,7 +506,8 @@ class FormHandler extends fhNew
      */
     public function colorPicker($title, $name, $validator = null, $size = null, $maxlength = null, $extra = null)
     {
-        return \FormHandler\Field\ColorPicker::set($form, $title, $name, $validator)
+        return \FormHandler\Field\ColorPicker::set($this, $title, $name)
+            ->setValidator(self::parseValidator($validator))
             ->setSize($size)
             ->setMaxlength($maxlength)
             ->setExtra($extra);
@@ -405,12 +519,12 @@ class FormHandler extends fhNew
      * Create a dateTextField on the form
      * Validator added by Johan Wiegel
      *
-     * @param string $title: The title of the field
-     * @param string $name: The name of the field
-     * @param string $validator: The validator which should be used to validate the value of the field
-     * @param string $mask: How do we have to display the fields? These can be used: d, m and y. (Only for DB-Field with Type 'Date')
-     * @param bool $bParseOtherPresentations: try to parse other presentations of dateformat
-     * @param string $extra: CSS, Javascript or other which are inserted into the HTML tag
+     * @param string $title The title of the field
+     * @param string $name The name of the field
+     * @param string $validator The validator which should be used to validate the value of the field
+     * @param string $mask How do we have to display the fields? These can be used: d, m and y. (Only for DB-Field with Type 'Date')
+     * @param bool $bParseOtherPresentations try to parse other presentations of dateformat
+     * @param string $extra CSS, Javascript or other which are inserted into the HTML tag
      * @return \FormHandler\Field\Text
      * @author Thomas Branius
      * @since 16-03-2010
@@ -418,7 +532,8 @@ class FormHandler extends fhNew
      */
     public function dateTextField($title, $name, $validator = null, $mask = null, $bParseOtherPresentations = false, $extra = null)
     {
-        return \FormHandler\Field\Text::set($this, $title, $name, $validator)
+        return \FormHandler\Field\Text::set($this, $title, $name)
+            ->setValidator(self::parseValidator($validator))
             ->setExtra($extra);
     }
 
@@ -428,13 +543,14 @@ class FormHandler extends fhNew
      * Create a dateTextField on the form
      * Validator added by Johan Wiegel
      *
-     * @param string $title: The title of the field
-     * @param string $name: The name of the field
-     * @param string $mask: How do we have to display the fields? These can be used: d, m and y. (Only for DB-Field with Type 'Date')
-     * @param bool $bParseOtherPresentations: try to parse other presentations of dateformat
-     * @param boolean $bIncludeJS: Should we include the js file (only needed once on a page)
-     * @param string $extra: CSS, Javascript or other which are inserted into the HTML tag
-     * @param boolean $bIncludeJS: Should we include the js file (only needed once on a page)
+     * @param string $title The title of the field
+     * @param string $name The name of the field
+     * @param string $validator
+     * @param string $mask How do we have to display the fields? These can be used: d, m and y. (Only for DB-Field with Type 'Date')
+     * @param bool $bParseOtherPresentations try to parse other presentations of dateformat
+     * @param boolean $bIncludeJS Should we include the js file (only needed once on a page)
+     * @param string $extra CSS, Javascript or other which are inserted into the HTML tag
+     * @param boolean $bIncludeJS Should we include the js file (only needed once on a page)
      * @return \FormHandler\Field\Text
      * @author Thomas Branius
      * @since 16-03-2010
@@ -442,7 +558,8 @@ class FormHandler extends fhNew
      */
     public function jsDateTextField($title, $name, $validator = null, $mask = null, $bParseOtherPresentations = false, $extra = null, $bIncludeJS = true)
     {
-        return \FormHandler\Field\Text::set($this, $title, $name, $validator)
+        return \FormHandler\Field\Text::set($this, $title, $name)
+            ->setValidator(self::parseValidator($validator))
             ->setExtra($extra);
     }
     /*     * ************** */

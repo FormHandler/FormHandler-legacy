@@ -24,5 +24,14 @@
  */
 class TextField extends \FormHandler\Field\Text
 {
+    public static function set(\FormHandler\FormHandler $form, $title, $name, $validator = null)
+    {
+        return parent::set($form, $title, $name)
+            ->setValidator(FormHandler::parseValidator($validator));
+    }
 
+    public function setValidator($validator)
+    {
+        return parent::setValidator(FormHandler::parseValidator($validator));
+    }
 }

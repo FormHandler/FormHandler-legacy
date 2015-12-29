@@ -24,5 +24,14 @@
  */
 class HiddenField extends \FormHandler\Field\Hidden
 {
+    public static function set(\FormHandler\FormHandler $form, $name, $validator = null)
+    {
+        return parent::set($form, $name)
+            ->setValidator(FormHandler::parseValidator($validator));
+    }
 
+    public function setValidator($validator)
+    {
+        return parent::setValidator(FormHandler::parseValidator($validator));
+    }
 }
