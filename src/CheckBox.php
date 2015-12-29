@@ -32,6 +32,20 @@ class CheckBox extends \FormHandler\Field\CheckBox
 
     public function setValidator($validator = null)
     {
+        if(count($this->getValidators()) === 0
+            && $validator instanceof FormHandler\Validator\FunctionCallable
+            && is_array($validator->getCallable()))
+        {
+            $callable = $validator->getCallable();
+
+            //detect if it is an optional validator
+            if($callable[0] instanceof Validator
+                && substr($callable[1], 0, 1) !== '_')
+            {
+                parent::setValidator(new \FormHandler\Validator\NotEmpty());
+            }
+        }
+
         return parent::setValidator(FormHandler::parseValidator($validator));
     }
 }
