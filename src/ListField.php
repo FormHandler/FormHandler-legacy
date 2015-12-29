@@ -30,7 +30,7 @@ class ListField extends \FormHandler\Field\SelectList
             ->setValidator(FormHandler::parseValidator($validator));
     }
 
-    public function setValidator($validator)
+    public function setValidator($validator = null)
     {
         return parent::setValidator(FormHandler::parseValidator($validator));
     }

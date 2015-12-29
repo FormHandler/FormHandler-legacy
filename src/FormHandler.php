@@ -11,68 +11,68 @@ use FormHandler\FormHandler as fhNew;
 
 /* * ***** BUILD IN VALIDATOR FUNCTIONS ****** */
 // any string that doesn't have control characters (ASCII 0 - 31) but spaces are allowed
-define('FH_STRING', 'String', true);
+define('FH_STRING', 'IsString', true);
 // only letters a-z and A-Z
-define('FH_ALPHA', 'Alpha', true);
+define('FH_ALPHA', 'IsAlpha', true);
 // only numbers 0-9
-define('FH_DIGIT', 'Digit', true);
+define('FH_DIGIT', 'IsDigit', true);
 // letters and numbers
-define('FH_ALPHA_NUM', 'AlphaDigit', true);
+define('FH_ALPHA_NUM', 'IsAlphaNum', true);
 // only numbers 0-9 and an optional - (minus) sign (in the beginning only)
-define('FH_INTEGER', 'Integer', true);
+define('FH_INTEGER', 'IsInteger', true);
 // like FH_INTEGER, only with , (comma)
-define('FH_FLOAT', 'Float', true);
+define('FH_FLOAT', 'IsFloat', true);
 // a valid file name (including dots but no slashes and other forbidden characters)
-define('FH_FILENAME', 'Filename', true);
+define('FH_FILENAME', 'IsFilename', true);
 // a boolean (TRUE is either a case-insensitive "true" or "1". Everything else is FALSE)
-define('FH_BOOL', 'Boolean', true);
+define('FH_BOOL', 'IsBool', true);
 // a valid variable name (letters, digits, underscore)
-define('FH_VARIABLE', 'Variabele', true);
+define('FH_VARIABLE', 'IsVariable', true);
 // a valid password (alphanumberic + some other characters but no spaces. Only allow ASCII 33 - 126)
-define('FH_PASSWORD', 'Password', true);
+define('FH_PASSWORD', 'IsPassword', true);
 // a valid URL
-define('FH_URL', 'Url', true);
+define('FH_URL', 'IsURL', true);
 // a valid URL (http connection is used to check if url exists!)
-define('FH_URL_HOST', 'UrlHost', true);
+define('FH_URL_HOST', 'IsURLHost', true);
 // a valid email address (only checks for valid format: xxx@xxx.xxx)
-define('FH_EMAIL', 'Email', true);
+define('FH_EMAIL', 'IsEmail', true);
 // like FH_EMAIL only with host check
-define('FH_EMAIL_HOST', 'EmailHost', true);
+define('FH_EMAIL_HOST', 'IsEmailHost', true);
 // like FH_STRING, but newline characters are allowed
-define('FH_TEXT', 'Text', true);
+define('FH_TEXT', 'IsText', true);
 // check if the value is not empty
-define('FH_NOT_EMPTY', 'NotEmpty', true);
+define('FH_NOT_EMPTY', 'notEmpty', true);
 // check if the value does not contain html
-define('FH_NO_HTML', 'NotHtml', true);
+define('FH_NO_HTML', 'NoHTML', true);
 // check if the value is a valid ip adres (xxx.xxx.xxx.xxx:xxxx)
-define('FH_IP', 'Ip', true);
+define('FH_IP', 'IsIp', true);
 
 // for dutch people
 // valid dutch postcode (eg. 9999 AA)
-define('FH_POSTCODE', 'PostalDutch', true);
+define('FH_POSTCODE', 'IsPostcode', true);
 // valid dutch phone-number(eg. 058-2134778)
-define('FH_PHONE', 'PhoneDutch', true);
+define('FH_PHONE', 'IsPhone', true);
 
 // same as above, but with these the value is not required
-define('_FH_STRING', '_String', true);
-define('_FH_ALPHA', '_Alpha', true);
-define('_FH_DIGIT', '_Digit', true);
-define('_FH_ALPHA_NUM', '_AlphaDigit', true);
-define('_FH_INTEGER', '_Integer', true);
-define('_FH_FLOAT', '_Float', true);
-define('_FH_FILENAME', '_Filename', true);
-define('_FH_BOOL', '_Bool', true);
-define('_FH_VARIABLE', '_Variabele', true);
-define('_FH_PASSWORD', '_Password', true);
-define('_FH_URL', '_Url', true);
-define('_FH_URL_HOST', '_UrlHost', true);
-define('_FH_EMAIL', '_Email', true);
-define('_FH_EMAIL_HOST', '_EmailHost', true);
-define('_FH_TEXT', '_Text', true);
-define('_FH_POSTCODE', '_PostalDutch', true);
-define('_FH_PHONE', '_PhoneDutch', true);
-define('_FH_NO_HTML', '_NotHtml', true);
-define('_FH_IP', '_Ip', true);
+define('_FH_STRING', '_IsString', true);
+define('_FH_ALPHA', '_IsAlpha', true);
+define('_FH_DIGIT', '_IsDigit', true);
+define('_FH_ALPHA_NUM', '_IsAlphaNum', true);
+define('_FH_INTEGER', '_IsInteger', true);
+define('_FH_FLOAT', '_IsFloat', true);
+define('_FH_FILENAME', '_IsFilename', true);
+define('_FH_BOOL', '_IsBool', true);
+define('_FH_VARIABLE', '_IsVariabele', true);
+define('_FH_PASSWORD', '_IsPassword', true);
+define('_FH_URL', '_IsURL', true);
+define('_FH_URL_HOST', '_IsURLHost', true);
+define('_FH_EMAIL', '_IsEmail', true);
+define('_FH_EMAIL_HOST', '_IsEmailHost', true);
+define('_FH_TEXT', '_IsText', true);
+define('_FH_POSTCODE', '_IsPostcode', true);
+define('_FH_PHONE', '_IsPhone', true);
+define('_FH_NO_HTML', '_NoHTML', true);
+define('_FH_IP', '_IsIp', true);
 
 /**
  * class FormHandler
@@ -97,19 +97,12 @@ class FormHandler extends fhNew
         }
         if(is_string($validator))
         {
-            $required = true;
-            if(substr($validator, 0, 1) == '_')
-            {
-                $validator = substr($validator, 1);
-                $required = false;
-            }
             
-            $name = '\FormHandler\Validator\\' . $validator;
-
-            if(class_exists($name))
+            $v = new Validator();
+            if(method_exists($v, $validator))
             {
-                $v = new $name();
-                return $v->setRequired($required);
+                //change validator to be callable
+                $validator = array($v, $validator);
             }
         }
         if(is_callable($validator))

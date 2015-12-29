@@ -30,7 +30,7 @@ class PassField extends \FormHandler\Field\Password
             ->setValidator(FormHandler::parseValidator($validator));
     }
 
-    public function setValidator($validator)
+    public function setValidator($validator = null)
     {
         return parent::setValidator(FormHandler::parseValidator($validator));
     }

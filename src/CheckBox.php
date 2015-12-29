@@ -30,7 +30,7 @@ class CheckBox extends \FormHandler\Field\CheckBox
             ->setValidator(FormHandler::parseValidator($validator));
     }
 
-    public function setValidator($validator)
+    public function setValidator($validator = null)
     {
         return parent::setValidator(FormHandler::parseValidator($validator));
     }
