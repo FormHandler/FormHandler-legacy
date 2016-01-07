@@ -90,22 +90,28 @@ class FormHandler extends fhNew
      * Helper function to parse old style validators to new style
      *
      * @param mixed $validator
+     * @param \FormHandler\Field\Field $field
      * @return \name
      */
-    public static function parseValidator($validator, Field $field)
+    public static function parseValidator($validator, \FormHandler\Field\Field $field = null)
     {
-        $field->setRequired();
-
         if($validator instanceof \FormHandler\Validator\ValidatorInterface)
         {
             return $validator;
         }
+
+        //detect default validations
         if(is_string($validator))
         {
-
             $v = new Validator();
             if(method_exists($v, $validator))
             {
+                //make required when not starting with _
+                if(substr($validator, 0, 1) != '_')
+                {
+                    $field->setRequired(true);
+                }
+
                 //change validator to be callable
                 $validator = array($v, $validator);
             }
