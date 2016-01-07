@@ -21,7 +21,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
- * 
+ *
  * @package FormHandler
  */
 
@@ -441,6 +441,27 @@ class Validator
         {
             return (bool) (count($value) > 0);
         }
+    }
+
+    /**
+     * Legacy method for handling existing fh_not_zero validators
+     *
+     * @param mixed $value
+     * @return boolean
+     */
+    public function fh_not_zero($value)
+    {
+        return Validator::notZero($value);
+    }
+
+    public function notZero($value)
+    {
+        return $value != '0';
+    }
+
+    public function _notZero($value)
+    {
+        return strlen($value) == 0 || Validator::notZero($value);
     }
 
     // check if it's a valid ip adres

@@ -46,6 +46,6 @@ class LengthField extends \FormHandler\Field\Length
             }
         }
 
-        return parent::setValidator(FormHandler::parseValidator($validator));
+        return parent::setValidator(FormHandler::parseValidator($validator, $this));
     }
 }

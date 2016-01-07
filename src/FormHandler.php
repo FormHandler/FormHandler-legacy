@@ -12,6 +12,8 @@ use FormHandler\FormHandler as fhNew;
 /* * ***** BUILD IN VALIDATOR FUNCTIONS ****** */
 // any string that doesn't have control characters (ASCII 0 - 31) but spaces are allowed
 define('FH_STRING', 'IsString', true);
+//not a 0 value
+define('FH_NOT_ZERO', 'notZero', true);
 // only letters a-z and A-Z
 define('FH_ALPHA', 'IsAlpha', true);
 // only numbers 0-9
@@ -55,6 +57,7 @@ define('FH_PHONE', 'IsPhone', true);
 
 // same as above, but with these the value is not required
 define('_FH_STRING', '_IsString', true);
+define('_FH_NOT_ZERO', '_notZero', true);
 define('_FH_ALPHA', '_IsAlpha', true);
 define('_FH_DIGIT', '_IsDigit', true);
 define('_FH_ALPHA_NUM', '_IsAlphaNum', true);
@@ -85,19 +88,21 @@ class FormHandler extends fhNew
 {
     /**
      * Helper function to parse old style validators to new style
-     * 
+     *
      * @param mixed $validator
      * @return \name
      */
-    public static function parseValidator($validator)
+    public static function parseValidator($validator, Field $field)
     {
+        $field->setRequired();
+
         if($validator instanceof \FormHandler\Validator\ValidatorInterface)
         {
             return $validator;
         }
         if(is_string($validator))
         {
-            
+
             $v = new Validator();
             if(method_exists($v, $validator))
             {
@@ -105,6 +110,7 @@ class FormHandler extends fhNew
                 $validator = array($v, $validator);
             }
         }
+
         if(is_callable($validator))
         {
             return new \FormHandler\Validator\FunctionCallable($validator);
@@ -174,7 +180,7 @@ class FormHandler extends fhNew
      * @since 22-10-2008
      * @deprecated No alternative present
      */
-	public function textSelectField($title, $name, $aOptions, $validator = null, $size = null, $maxlength = null, $extra = null)
+    public function textSelectField($title, $name, $aOptions, $validator = null, $size = null, $maxlength = null, $extra = null)
     {
         return $this->selectField($title, $name, $aOptions, $validator, null, null, $size, $extra);
     }
@@ -683,14 +689,14 @@ class FormHandler extends fhNew
 	{
         return;
     }
-    
+
 	/**
 	 * FormHandler::enableAjaxValidator
 	 *
 	 * @param boolean $mode: The new state of the AjaxValidator
 	 * @param boolean $bScript: Should the library (jQuery) be included by FH
 	 * @return void
-	 * 
+	 *
 	 * @since 03-12-2008
 	 * @author Johan Wiegel
      * @deprecated ajax validation will be solved in a different way
@@ -699,7 +705,7 @@ class FormHandler extends fhNew
     {
         return;
     }
-    
+
     /**
      * FormHandler::getAsArray()
      *
@@ -714,7 +720,7 @@ class FormHandler extends fhNew
 	{
         return false;
     }
-    
+
     /**
      * FormHandler::getAsMailBody()
      *
@@ -730,7 +736,7 @@ class FormHandler extends fhNew
 	{
         return '';
     }
-    
+
     /**
      * FormHandler::getFileInfo()
      *
@@ -794,7 +800,7 @@ class FormHandler extends fhNew
 	{
         return;
     }
-    
+
     /**
      * FormHandler::resizeImage()
      *
@@ -993,7 +999,7 @@ class FormHandler extends fhNew
 
     /**
      * Get the form
-     * 
+     *
      * @param boolean $return
      * @return string|null
      */
@@ -1012,7 +1018,7 @@ class FormHandler extends fhNew
             return null;
         }
     }
-    
+
     /**
      * FormHandler::_text()
      *

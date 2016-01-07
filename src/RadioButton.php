@@ -26,8 +26,9 @@ class RadioButton extends \FormHandler\Field\Radio
 {
     public static function set(\FormHandler\FormHandler $form, $title, $name, $validator = null)
     {
-        return parent::set($form, $title, $name)
-            ->setValidator(FormHandler::parseValidator($validator));
+        $field = parent::set($form, $title, $name);
+        $field->setValidator(FormHandler::parseValidator($validator, $field));
+        return $field;
     }
 
     public function setValidator($validator = null)
@@ -46,6 +47,6 @@ class RadioButton extends \FormHandler\Field\Radio
             }
         }
 
-        return parent::setValidator(FormHandler::parseValidator($validator));
+        return parent::setValidator(FormHandler::parseValidator($validator, $this));
     }
 }
