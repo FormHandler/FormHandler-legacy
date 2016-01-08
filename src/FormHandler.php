@@ -106,8 +106,9 @@ class FormHandler extends fhNew
             $v = new Validator();
             if(method_exists($v, $validator))
             {
-                //make required when not starting with _
-                if(substr($validator, 0, 1) != '_')
+                //make required when validator is not optional
+                if(!is_null($field)
+                    && substr($validator, 0, 1) != '_')
                 {
                     $field->setRequired(true);
                 }
@@ -142,8 +143,8 @@ class FormHandler extends fhNew
      */
     public function textField($title, $name, $validator = null, $size = null, $maxlength = null, $extra = null)
     {
-        return \FormHandler\Field\Text::set($this, $title, $name)
-            ->setValidator(self::parseValidator($validator))
+        $field = \FormHandler\Field\Text::set($this, $title, $name);
+        return $field->setValidator(self::parseValidator($validator, $field))
             ->setSize($size)
             ->setMaxlength($maxlength)
             ->setExtra($extra);
@@ -206,11 +207,10 @@ class FormHandler extends fhNew
      * @author Teye Heimans
      * @deprecated Use \FormHandler\Field\Password::set() instead
      */
-    public function passField(
-    $title, $name, $validator = null, $size = null, $maxlength = null, $extra = null)
+    public function passField($title, $name, $validator = null, $size = null, $maxlength = null, $extra = null)
     {
-        return \FormHandler\Field\Password::set($this, $title, $name)
-            ->setValidator(self::parseValidator($validator))
+        $field = \FormHandler\Field\Password::set($this, $title, $name);
+        return $field->setValidator(self::parseValidator($validator, $field))
             ->setSize($size)
             ->setMaxlength($maxlength)
             ->setExtra($extra);
@@ -231,8 +231,8 @@ class FormHandler extends fhNew
      */
     public function hiddenField($name, $value = null, $validator = null, $extra = null)
     {
-        $fld = \FormHandler\Field\Hidden::set($this, $name)
-            ->setValidator(self::parseValidator($validator))
+        $fld = \FormHandler\Field\Hidden::set($this, $name);
+        $fld->setValidator(self::parseValidator($validator, $fld))
             ->setExtra($extra);
 
         // only set the hidden field value if there is not a value in the $_POST array
@@ -260,8 +260,8 @@ class FormHandler extends fhNew
      */
     public function textArea($title, $name, $validator = null, $cols = null, $rows = null, $extra = null)
     {
-        return \FormHandler\Field\TextArea::set($this, $title, $name)
-            ->setValidator(self::parseValidator($validator))
+        $field = \FormHandler\Field\TextArea::set($this, $title, $name);
+        return $field->setValidator(self::parseValidator($validator, $field))
             ->setCols($cols)
             ->setRows($rows)
             ->setExtra($extra);
@@ -286,9 +286,9 @@ class FormHandler extends fhNew
      */
     public function selectField($title, $name, $options = null, $validator = null, $useArrayKeyAsValue = null, $multiple = null, $size = null, $extra = null)
     {
-        return \FormHandler\Field\Select::set($this, $title, $name)
-            ->setOptions(empty($options) ? null : $options)
-            ->setValidator(self::parseValidator($validator))
+        $field = \FormHandler\Field\Select::set($this, $title, $name);
+        return $field->setOptions(empty($options) ? null : $options)
+            ->setValidator(self::parseValidator($validator, $field))
             ->useArrayKeyAsValue($useArrayKeyAsValue)
             ->setExtra($extra)
             ->setMultiple($multiple)
@@ -313,8 +313,8 @@ class FormHandler extends fhNew
      */
     public function checkBox($title, $name, $value = 'on', $validator = null, $useArrayKeyAsValue = null, $extra = null, $mask = null)
     {
-        return \FormHandler\Field\CheckBox::set($this, $title, $name)
-            ->setValidator(self::parseValidator($validator))
+        $field = \FormHandler\Field\CheckBox::set($this, $title, $name);
+        return $field->setValidator(self::parseValidator($validator, $field))
             ->setOptions($value)
             ->useArrayKeyAsValue($useArrayKeyAsValue)
             ->setExtra($extra)
@@ -339,8 +339,8 @@ class FormHandler extends fhNew
      */
     public function radioButton($title, $name, $options, $validator = null, $useArrayKeyAsValue = null, $extra = null, $mask = null)
     {
-        return \FormHandler\Field\Radio::set($this, $title, $name)
-            ->setValidator(self::parseValidator($validator))
+        $field = \FormHandler\Field\Radio::set($this, $title, $name);
+        return $field->setValidator(self::parseValidator($validator, $field))
             ->setOptions($options)
             ->useArrayKeyAsValue($useArrayKeyAsValue)
             ->setExtra($extra)
@@ -362,10 +362,10 @@ class FormHandler extends fhNew
      * @author Teye Heimans
      * @deprecated Use FormHandler\Field\File::set() instead
      */
-	public function uploadField($title, $name, $config = array(), $validator = null, $extra = null, $alertOverwrite = null)
+    public function uploadField($title, $name, $config = array(), $validator = null, $extra = null, $alertOverwrite = null)
     {
-        return FormHandler\Field\File::set($this, $title, $name)
-            ->setValidator(self::parseValidator($validator))
+        $field = FormHandler\Field\File::set($this, $title, $name);
+        return $field->setValidator(self::parseValidator($validator, $field))
             ->setExtra($extra);
     }
 
@@ -390,8 +390,8 @@ class FormHandler extends fhNew
      */
     public function listField($title, $name, $options, $validator = null, $useArrayKeyAsValue = null, $onTitle = null, $offTitle = null, $size = null, $extra = null, $verticalMode = null)
     {
-        return \FormHandler\Field\SelectList::set($this, $title, $name)
-            ->setValidator(self::parseValidator($validator))
+        $field = \FormHandler\Field\SelectList::set($this, $title, $name);
+        return $field->setValidator(self::parseValidator($validator, $field))
             ->setOptions($options)
             ->useArrayKeyAsValue($useArrayKeyAsValue)
             ->setSize($size)
@@ -420,7 +420,7 @@ class FormHandler extends fhNew
      * @author Teye Heimans
      * @deprecated No alternative exist
      */
-	public function editor($title, $name, $validator = null, $path = null, $toolbar = null, $skin = null, $width = null, $height = null, $config = null)
+    public function editor($title, $name, $validator = null, $path = null, $toolbar = null, $skin = null, $width = null, $height = null, $config = null)
     {
         return \FormHandler\Field\TextArea::set($this, $title, $name, $validator);
     }
@@ -443,8 +443,8 @@ class FormHandler extends fhNew
      */
     public function dateField($title, $name, $validator = null, $required = null, $mask = null, $interval = null, $extra = null)
     {
-        return \FormHandler\Field\Text::set($this, $title, $name)
-            ->setValidator(self::parseValidator($validator))
+        $field = \FormHandler\Field\Text::set($this, $title, $name);
+        return $field->setValidator(self::parseValidator($validator))
             ->setExtra($extra);
     }
 
@@ -467,8 +467,8 @@ class FormHandler extends fhNew
      */
     public function jsDateField($title, $name, $validator = null, $required = null, $mask = null, $interval = null, $extra = null, $bIncludeJS = true)
     {
-        return \FormHandler\Field\Text::set($this, $title, $name)
-            ->setValidator(self::parseValidator($validator))
+        $field = \FormHandler\Field\Text::set($this, $title, $name);
+        return $field->setValidator(self::parseValidator($validator, $field))
             ->setExtra($extra);
     }
 
@@ -488,8 +488,8 @@ class FormHandler extends fhNew
      */
     public function timeField($title, $name, $validator = null, $required = null, $format = null, $extra = null)
     {
-        return \FormHandler\Field\Text::set($this, $title, $name)
-            ->setValidator(self::parseValidator($validator))
+        $field = \FormHandler\Field\Text::set($this, $title, $name);
+        return $field->setValidator(self::parseValidator($validator, $field))
             ->setExtra($extra);
     }
 
@@ -511,8 +511,8 @@ class FormHandler extends fhNew
      */
     public function colorPicker($title, $name, $validator = null, $size = null, $maxlength = null, $extra = null)
     {
-        return \FormHandler\Field\ColorPicker::set($this, $title, $name)
-            ->setValidator(self::parseValidator($validator))
+        $field = \FormHandler\Field\ColorPicker::set($this, $title, $name);
+        return $field->setValidator(self::parseValidator($validator, $field))
             ->setSize($size)
             ->setMaxlength($maxlength)
             ->setExtra($extra);
@@ -537,8 +537,8 @@ class FormHandler extends fhNew
      */
     public function dateTextField($title, $name, $validator = null, $mask = null, $bParseOtherPresentations = false, $extra = null)
     {
-        return \FormHandler\Field\Text::set($this, $title, $name)
-            ->setValidator(self::parseValidator($validator))
+        $field = \FormHandler\Field\Text::set($this, $title, $name);
+        return $field->setValidator(self::parseValidator($validator, $field))
             ->setExtra($extra);
     }
 
@@ -563,10 +563,11 @@ class FormHandler extends fhNew
      */
     public function jsDateTextField($title, $name, $validator = null, $mask = null, $bParseOtherPresentations = false, $extra = null, $bIncludeJS = true)
     {
-        return \FormHandler\Field\Text::set($this, $title, $name)
-            ->setValidator(self::parseValidator($validator))
+        $field = \FormHandler\Field\Text::set($this, $title, $name);
+        return $field->setValidator(self::parseValidator($validator, $field))
             ->setExtra($extra);
     }
+
     /*     * ************** */
     /*     * ** BUTTONS *** */
     /*     * ************** */
