@@ -43,7 +43,7 @@ class Validator
      * @param string $pattern The pattern to match. This function does not validate given pattern
      * @param string|null $help_text Optionally set placeholder text for field i.e. DD-MM-YYYY
      */
-    public static function validateRegularExpression(Field $field, $pattern, $help_text = null)
+    public static function validateRegularExpression(\FormHandler\Field\Field $field, $pattern, $help_text = null)
     {
         $field->setExtra(' pattern="'. $pattern .'"', true)
             ->setValidator(function($value) use ($pattern)
@@ -53,7 +53,7 @@ class Validator
 
         if(!is_null($help_text))
         {
-            $field->setExtra(' placeholder="'. $help_text .'"');
+            $field->setExtra(' placeholder="'. $help_text .'"', true);
         }
     }
 
