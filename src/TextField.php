@@ -27,8 +27,8 @@ class TextField extends \FormHandler\Field\Text
     public static function set(\FormHandler\FormHandler $form, $title, $name, $validator = null)
     {
         $field = parent::set($form, $title, $name);
-        $field->setValidator(FormHandler::parseValidator($validator, $field));
-        return $field;
+        return $field->setValidator(FormHandler::parseValidator($validator, $field))
+            ->useArrayKeyAsValue(false);
     }
 
     public function setValidator($validator = null)
