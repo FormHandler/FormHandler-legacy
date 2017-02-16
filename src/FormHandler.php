@@ -12,6 +12,7 @@ use FormHandler\FormHandler as fhNew;
 /* * ***** BUILD IN VALIDATOR FUNCTIONS ****** */
 // any string that doesn't have control characters (ASCII 0 - 31) but spaces are allowed
 define('FH_STRING', 'IsString', true);
+define('FH_DATE', 'IsDate', true);
 //not a 0 value
 define('FH_NOT_ZERO', 'notZero', true);
 // only letters a-z and A-Z
@@ -56,6 +57,7 @@ define('FH_POSTCODE', 'IsPostcode', true);
 define('FH_PHONE', 'IsPhone', true);
 
 // same as above, but with these the value is not required
+define('_FH_DATE', '_IsDate', true);
 define('_FH_STRING', '_IsString', true);
 define('_FH_NOT_ZERO', '_notZero', true);
 define('_FH_ALPHA', '_IsAlpha', true);
