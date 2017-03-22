@@ -84,6 +84,51 @@ class Validator
     }
 
     /**
+     * Validator::IsDate()
+     *
+     * Check for date
+     *
+     * @param string $value The string to check
+     * @return bool
+     */
+    public function IsDate($value)
+    {
+        if(!is_string($value))
+        {
+            return false;
+        }
+
+        //format: yyyy-mm-dd
+        $list = [null,null,null];
+        foreach(explode('-', $value) as $key => $item)
+        {
+            $list[$key] = (int) $item;
+        }
+
+        $d = new \DateTime();
+        $d->setDate(
+            $list[0], //year
+            $list[1], //month
+            $list[2] //day
+        );
+
+        return $value == $d->format('Y-m-d');
+    }
+
+    /**
+     * Validator::_IsDate()
+     *
+     * Public: same as IsDate, only now the value is also valid if it is empty
+     *
+     * @param string $value
+     * @return bool
+     */
+    public function _IsDate($value)
+    {
+        return StrLen($value) == 0 || Validator::IsString($value);
+    }
+
+    /**
      * Validator::IsAlpha()
      *
      * Public: only letters a-z and A-Z
